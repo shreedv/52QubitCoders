@@ -10,22 +10,26 @@ import datetime
 import numpy as np
 import cv2
 import json
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app)
 
-# MongoDB Atlas Configuration
-app.config["MONGO_URI"] = "mongodb+srv://hgagana56:S0ZwyT2NnPpSFhBb@cluster0.z3unsij.mongodb.net/receiptApp?retryWrites=true&w=majority"
+# Load API keys and Mongo URI from environment variables
+app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Initialize PyMongo
 mongo = PyMongo(app)
 
-# OpenAI API Key
-openai.api_key = "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"
-
-# Tesseract Path (Windows only)
+# Windows Tesseract Path (change or remove for other OS)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-# Create CSV folder
+# Directory for saving CSVs
 CSV_FOLDER = "csv_exports"
 os.makedirs(CSV_FOLDER, exist_ok=True)
 
@@ -43,10 +47,12 @@ def upload():
         return jsonify({'error': 'Empty filename'}), 400
 
     try:
+        # Convert uploaded image to OpenCV format
         image = Image.open(file.stream).convert("RGB")
         open_cv_image = np.array(image)
         open_cv_image = open_cv_image[:, :, ::-1].copy()
 
+        # OCR using Tesseract
         extracted_text = pytesseract.image_to_string(open_cv_image)
         cleaned_text = extracted_text.replace('\n', ' ').strip()
 
@@ -75,12 +81,13 @@ def analyze():
         - Total Amount
         - Tax Amount
         - Due Date
-        - Line Items (if available)
+        - Line Items (each with Description, Quantity, Price, Amount)
 
         Return the result in JSON format. Here is the bill text:
         {extracted_text}
         """
 
+        # Call OpenAI API
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
@@ -118,5 +125,5 @@ def get_bills():
     bills = list(mongo.db.bills.find({}, {'_id': 0}))
     return jsonify(bills)
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)
