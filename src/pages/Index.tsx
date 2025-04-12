@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -121,15 +120,6 @@ const Index = () => {
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text">
-          Invoice Smart Fill
-        </h1>
-        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-          Automatically extract data from invoices and bills using AI and fill your templates with a single click
-        </p>
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="flex justify-center mb-6">
           <TabsList className="grid w-full max-w-md grid-cols-3">
